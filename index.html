@@ -19,6 +19,27 @@
       padding: 24px;
     }
 
+    .logo-icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 16px;
+      border-radius: 50%;
+    }
+
+    .logo-fallback {
+      display: none;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid #E5FA76;
+      color: #E5FA76;
+      font-size: 28px;
+      font-weight: 700;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
     .logo {
       font-size: 32px;
       font-weight: 700;
@@ -75,7 +96,7 @@
     }
 
     input[type="password"]:focus {
-      border-color: #F3AF3E;
+      border-color: #E5FA76;
     }
 
     .field {
@@ -91,7 +112,7 @@
     .btn {
       width: 100%;
       padding: 14px;
-      background: #F3AF3E;
+      background: #E5FA76;
       color: #161616;
       border: none;
       border-radius: 8px;
@@ -152,8 +173,10 @@
 </head>
 <body>
 
+  <img src="https://optimal-os2.vercel.app/favicon.ico" alt="OPTIMAL" class="logo-icon" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'">
+  <div class="logo-fallback" id="logoFallback">O</div>
   <div class="logo">OPTIMAL</div>
-  <div class="subtitle">SISTEMA DE GESTIÓN</div>
+  <div class="subtitle">Establece tu acceso a la app</div>
 
   <!-- Form -->
   <div class="card" id="formCard">
