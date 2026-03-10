@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPTIMAL — Establece tu contraseña</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #161616;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #888;
+      margin-bottom: 48px;
+    }
+
+    .card {
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .card h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 14px;
+      background: #161616;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 4px;
+    }
+
+    input[type="password"]:focus {
+      border-color: #F3AF3E;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .error-msg {
+      font-size: 12px;
+      color: #ef4444;
+      min-height: 18px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: #F3AF3E;
+      color: #161616;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .global-error {
+      background: #2d1515;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    /* Success screen */
+    .success {
+      text-align: center;
+      display: none;
+    }
+
+    .success .check {
+      width: 72px;
+      height: 72px;
+      background: #16a34a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .success .check svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    .success h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .success p {
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">OPTIMAL</div>
+  <div class="subtitle">SISTEMA DE GESTIÓN</div>
+
+  <!-- Form -->
+  <div class="card" id="formCard">
+    <h1>Establece tu contraseña</h1>
+    <p>Crea una contraseña segura para acceder a la app</p>
+
+    <div class="global-error" id="globalError"></div>
+
+    <form id="passwordForm" novalidate>
+      <div class="field">
+        <label for="password">Nueva contraseña</label>
+        <input type="password" id="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+        <div class="error-msg" id="passwordError"></div>
+      </div>
+
+      <div class="field">
+        <label for="confirm">Confirmar contraseña</label>
+        <input type="password" id="confirm" placeholder="Repite la contraseña" autocomplete="new-password">
+        <div class="error-msg" id="confirmError"></div>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Guardar contraseña</button>
+    </form>
+  </div>
+
+  <!-- Success -->
+  <div class="card success" id="successCard">
+    <div class="check">
+      <svg fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="3">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <h2>¡Contraseña creada correctamente!</h2>
+    <p>Ya puedes acceder a la app OPTIMAL con tu email y esta contraseña.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const { createClient } = supabase
+    const supabaseClient = createClient(
+      'https://cvbdrwkwpltjdmvbeagm.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2YmRyd2t3cGx0amRtdmJlYWdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyMzA2MjcsImV4cCI6MjA4MzgwNjYyN30.KxIKiyqJDx3F6SHEt9sKd-P4CaKSiOo44PWLzY6zXzo'
+    )
+
+    const form = document.getElementById('passwordForm')
+    const passwordInput = document.getElementById('password')
+    const confirmInput = document.getElementById('confirm')
+    const passwordError = document.getElementById('passwordError')
+    const confirmError = document.getElementById('confirmError')
+    const globalError = document.getElementById('globalError')
+    const submitBtn = document.getElementById('submitBtn')
+    const formCard = document.getElementById('formCard')
+    const successCard = document.getElementById('successCard')
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+
+      // Reset errors
+      passwordError.textContent = ''
+      confirmError.textContent = ''
+      globalError.style.display = 'none'
+
+      const password = passwordInput.value
+      const confirm = confirmInput.value
+      let valid = true
+
+      if (password.length < 8) {
+        passwordError.textContent = 'La contraseña debe tener al menos 8 caracteres'
+        valid = false
+      }
+
+      if (password !== confirm) {
+        confirmError.textContent = 'Las contraseñas no coinciden'
+        valid = false
+      }
+
+      if (!valid) return
+
+      submitBtn.disabled = true
+      submitBtn.textContent = 'Guardando...'
+
+      const { error } = await supabaseClient.auth.updateUser({ password })
+
+      if (error) {
+        globalError.textContent = error.message
+        globalError.style.display = 'block'
+        submitBtn.disabled = false
+        submitBtn.textContent = 'Guardar contraseña'
+        return
+      }
+
+      formCard.style.display = 'none'
+      successCard.style.display = 'block'
+    })
+  </script>
+
+</body>
+</html>
