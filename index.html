@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OPTIMAL — Establece tu contraseña</title>
+  <title>OPTIMAL — Activa tu cuenta</title>
   <link rel="icon" type="image/png" href="logo/OPTIMAL_Avatar_Negativo_L (1).png">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,8 +20,6 @@
       padding: 24px;
     }
 
-
-
     .subtitle {
       font-size: 11px;
       letter-spacing: 4px;
@@ -35,7 +33,7 @@
       border-radius: 12px;
       padding: 40px;
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
     }
 
     .card h1 {
@@ -84,6 +82,89 @@
       min-height: 18px;
     }
 
+    /* Legal acceptance section */
+    .legal-section {
+      margin: 12px 0 4px;
+      padding-top: 20px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .legal-title {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 0 0 12px 0;
+      cursor: pointer;
+    }
+
+    .checkbox-item:last-child { margin-bottom: 0; }
+
+    .checkbox-item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      background: #161616;
+      border: 1.5px solid #444;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .checkbox-item input[type="checkbox"]:hover { border-color: #666; }
+
+    .checkbox-item input[type="checkbox"]:checked {
+      background: #E5FA76;
+      border-color: #E5FA76;
+    }
+
+    .checkbox-item input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 1px;
+      width: 5px;
+      height: 10px;
+      border: solid #161616;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .checkbox-label {
+      flex: 1;
+      font-size: 13px;
+      color: #ccc;
+      line-height: 1.5;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .checkbox-label a {
+      color: #E5FA76;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .checkbox-label a:hover { text-decoration: underline; }
+
+    .checkbox-label .ext-icon {
+      display: inline-block;
+      font-size: 11px;
+      margin-left: 2px;
+      transform: translateY(-1px);
+    }
+
     .btn {
       width: 100%;
       padding: 14px;
@@ -95,11 +176,11 @@
       font-weight: 600;
       cursor: pointer;
       transition: opacity 0.2s;
-      margin-top: 8px;
+      margin-top: 24px;
     }
 
     .btn:hover { opacity: 0.9; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .global-error {
       background: #2d1515;
@@ -113,10 +194,7 @@
     }
 
     /* Success screen */
-    .success {
-      text-align: center;
-      display: none;
-    }
+    .success { text-align: center; display: none; }
 
     .success .check {
       width: 72px;
@@ -129,10 +207,7 @@
       margin: 0 auto 24px;
     }
 
-    .success .check svg {
-      width: 36px;
-      height: 36px;
-    }
+    .success .check svg { width: 36px; height: 36px; }
 
     .success h2 {
       font-size: 20px;
@@ -168,8 +243,64 @@
     }
 
     .store-btn:hover { border-color: #fff; }
-
     .store-btn svg { width: 20px; height: 20px; }
+
+    /* Partial-failure (password OK, consents INSERT failed) */
+    .partial-failure { text-align: center; display: none; }
+
+    .partial-failure .warn-icon {
+      width: 64px;
+      height: 64px;
+      background: #422006;
+      border: 2px solid #f59e0b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+    }
+
+    .partial-failure h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .partial-failure p {
+      font-size: 14px;
+      color: #aaa;
+      margin-bottom: 0;
+      line-height: 1.5;
+    }
+
+    .partial-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      color: #ccc;
+      border: 1px solid #444;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: #888;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -179,8 +310,8 @@
 
   <!-- Form -->
   <div class="card" id="formCard">
-    <h1>Establece tu contraseña</h1>
-    <p>Crea una contraseña segura para acceder a la app</p>
+    <h1>Activa tu cuenta</h1>
+    <p>Crea una contraseña segura y acepta los documentos legales para acceder a la app.</p>
 
     <div class="global-error" id="globalError"></div>
 
@@ -197,7 +328,27 @@
         <div class="error-msg" id="confirmError"></div>
       </div>
 
-      <button type="submit" class="btn" id="submitBtn">Guardar contraseña</button>
+      <div class="legal-section">
+        <div class="legal-title">Aceptación legal</div>
+
+        <label class="checkbox-item">
+          <input type="checkbox" id="acceptPrivacy">
+          <span class="checkbox-label">
+            He leído y acepto la
+            <a href="https://optimal-os2.vercel.app/legal/privacidad" target="_blank" rel="noopener noreferrer">Política de Privacidad<span class="ext-icon">↗</span></a>
+          </span>
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox" id="acceptTerms">
+          <span class="checkbox-label">
+            He leído y acepto los
+            <a href="https://optimal-os2.vercel.app/legal/terminos" target="_blank" rel="noopener noreferrer">Términos y Condiciones<span class="ext-icon">↗</span></a>
+          </span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn" disabled>Activar mi cuenta</button>
     </form>
   </div>
 
@@ -222,24 +373,187 @@
     </div>
   </div>
 
+  <!-- Partial failure (password saved, consents INSERT failed) -->
+  <div class="card partial-failure" id="partialFailureCard">
+    <div class="warn-icon">⚠</div>
+    <h2>Tu contraseña se ha guardado correctamente</h2>
+    <p>Pero no hemos podido registrar tu aceptación de los documentos legales. Por favor, vuelve a intentarlo.</p>
+    <div class="partial-actions">
+      <button type="button" class="btn" id="retryConsentBtn">Reintentar registro</button>
+      <a href="#" class="btn-secondary" id="contactCenterLink">Contactar al centro</a>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // -------- Supabase client --------
     const { createClient } = supabase
     const supabaseClient = createClient(
       'https://cvbdrwkwpltjdmvbeagm.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2YmRyd2t3cGx0amRtdmJlYWdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyMzA2MjcsImV4cCI6MjA4MzgwNjYyN30.KxIKiyqJDx3F6SHEt9sKd-P4CaKSiOo44PWLzY6zXzo'
     )
 
+    // -------- DOM refs --------
     const form = document.getElementById('passwordForm')
     const passwordInput = document.getElementById('password')
     const confirmInput = document.getElementById('confirm')
+    const acceptPrivacy = document.getElementById('acceptPrivacy')
+    const acceptTerms = document.getElementById('acceptTerms')
     const passwordError = document.getElementById('passwordError')
     const confirmError = document.getElementById('confirmError')
     const globalError = document.getElementById('globalError')
     const submitBtn = document.getElementById('submitBtn')
     const formCard = document.getElementById('formCard')
     const successCard = document.getElementById('successCard')
+    const partialFailureCard = document.getElementById('partialFailureCard')
+    const retryConsentBtn = document.getElementById('retryConsentBtn')
+    const contactCenterLink = document.getElementById('contactCenterLink')
 
+    // Stop link clicks inside checkbox labels from toggling the checkbox
+    document.querySelectorAll('.checkbox-label a').forEach(a => {
+      a.addEventListener('click', e => e.stopPropagation())
+    })
+
+    // -------- Mailto fallback for partial-failure --------
+    const CONTACT_EMAIL = 'info@optimalbarbera.com'
+    contactCenterLink.href = 'mailto:' + CONTACT_EMAIL +
+      '?subject=' + encodeURIComponent('Activación parcial fallida') +
+      '&body=' + encodeURIComponent(
+        'Mi contraseña se guardó pero la aceptación legal falló.\n\n' +
+        'Email: \n' +
+        '(Por favor describe brevemente cuándo intentaste activar la cuenta)'
+      )
+
+    // -------- Reactive submit-button state --------
+    function updateSubmitState () {
+      const password = passwordInput.value
+      const confirm = confirmInput.value
+      const okLength = password.length >= 8
+      const okMatch = password.length > 0 && password === confirm
+      const okConsents = acceptPrivacy.checked && acceptTerms.checked
+      submitBtn.disabled = !(okLength && okMatch && okConsents)
+    }
+    ;[passwordInput, confirmInput].forEach(el => el.addEventListener('input', updateSubmitState))
+    ;[acceptPrivacy, acceptTerms].forEach(el => el.addEventListener('change', updateSubmitState))
+
+    // -------- Helpers --------
+    async function fetchActiveLegalDocs () {
+      // Pre-fetch BEFORE updateUser so we fail fast if BD is unreachable
+      const { data, error } = await supabaseClient
+        .from('legal_documents')
+        .select('id, doc_key, version')
+        .in('doc_key', ['privacy_policy_app', 'terms_app'])
+        .eq('language', 'es')
+        .eq('is_active', true)
+      if (error) throw new Error('No se pudieron cargar los documentos legales: ' + error.message)
+      const privacyDoc = data.find(d => d.doc_key === 'privacy_policy_app')
+      const termsDoc = data.find(d => d.doc_key === 'terms_app')
+      if (!privacyDoc || !termsDoc) {
+        throw new Error('Documentos legales no disponibles. Contacta con el centro.')
+      }
+      return { privacyDoc, termsDoc }
+    }
+
+    async function lookupClientId (user) {
+      // 1. Path canónico: app_profiles.supabase_user_id
+      let clientId = null
+      const { data: profile } = await supabaseClient
+        .from('app_profiles')
+        .select('client_id')
+        .eq('supabase_user_id', user.id)
+        .maybeSingle()
+
+      if (profile?.client_id) {
+        clientId = profile.client_id
+      } else if (user.email) {
+        // 2. Fallback: clients.email (case-insensitive)
+        const { data: client } = await supabaseClient
+          .from('clients')
+          .select('id')
+          .ilike('email', user.email)
+          .maybeSingle()
+        if (client?.id) clientId = client.id
+      }
+      // 3. Si ambos fallan: clientId queda NULL. El consent se registra igual
+      //    porque user_id es el campo crítico legalmente. client_id es trazabilidad
+      //    operativa (vincular consent al cliente del centro).
+      return clientId
+    }
+
+    async function insertConsents (user, clientId, privacyDoc, termsDoc) {
+      // TODO RGPD-v1.1: capturar IP via edge function dedicada
+      // Trazabilidad legal mínima cubierta por user_id + accepted_at + user_agent + channel
+      // Razón v1.0: edge function dedicada quedaría fuera del alcance de T5 (repo OS vetado)
+      const userAgent = navigator.userAgent
+      const rows = [
+        {
+          user_id: user.id,
+          client_id: clientId,
+          doc_key: 'privacy_policy_app',
+          doc_version: privacyDoc.version,
+          doc_id: privacyDoc.id,
+          accepted: true,
+          channel: 'web_activation',
+          user_agent: userAgent,
+          ip_address: null
+        },
+        {
+          user_id: user.id,
+          client_id: clientId,
+          doc_key: 'terms_app',
+          doc_version: termsDoc.version,
+          doc_id: termsDoc.id,
+          accepted: true,
+          channel: 'web_activation',
+          user_agent: userAgent,
+          ip_address: null
+        }
+      ]
+      const { error } = await supabaseClient.from('consents').insert(rows)
+      if (error) throw new Error('No se pudo registrar la aceptación legal: ' + error.message)
+    }
+
+    // -------- Retry state for partial failure --------
+    let pendingConsentArgs = null
+    let consentRetryCount = 0
+
+    function showPartialFailure (args) {
+      pendingConsentArgs = args
+      formCard.style.display = 'none'
+      partialFailureCard.style.display = 'block'
+      retryConsentBtn.disabled = false
+      retryConsentBtn.textContent = 'Reintentar registro'
+      retryConsentBtn.style.display = consentRetryCount >= 2 ? 'none' : 'block'
+    }
+
+    function showSuccess () {
+      formCard.style.display = 'none'
+      partialFailureCard.style.display = 'none'
+      successCard.style.display = 'block'
+    }
+
+    retryConsentBtn.addEventListener('click', async () => {
+      if (!pendingConsentArgs) return
+      retryConsentBtn.disabled = true
+      retryConsentBtn.textContent = 'Reintentando...'
+      try {
+        const { user, clientId, privacyDoc, termsDoc } = pendingConsentArgs
+        await insertConsents(user, clientId, privacyDoc, termsDoc)
+        consentRetryCount = 0
+        showSuccess()
+      } catch (err) {
+        console.error('[consent retry] failed:', err)
+        consentRetryCount += 1
+        if (consentRetryCount >= 2) {
+          retryConsentBtn.style.display = 'none'
+        } else {
+          retryConsentBtn.disabled = false
+          retryConsentBtn.textContent = 'Reintentar registro'
+        }
+      }
+    })
+
+    // -------- Submit handler --------
     form.addEventListener('submit', async (e) => {
       e.preventDefault()
 
@@ -262,23 +576,51 @@
         valid = false
       }
 
+      if (!acceptPrivacy.checked || !acceptTerms.checked) {
+        globalError.textContent = 'Debes aceptar ambos documentos legales para activar tu cuenta.'
+        globalError.style.display = 'block'
+        valid = false
+      }
+
       if (!valid) return
 
       submitBtn.disabled = true
-      submitBtn.textContent = 'Guardando...'
+      submitBtn.textContent = 'Activando...'
 
-      const { error } = await supabaseClient.auth.updateUser({ password })
+      try {
+        // 1. Pre-fetch legal docs (fail fast if BD KO)
+        const { privacyDoc, termsDoc } = await fetchActiveLegalDocs()
 
-      if (error) {
-        globalError.textContent = error.message
+        // 2. Update password
+        const { error: updateError } = await supabaseClient.auth.updateUser({ password })
+        if (updateError) throw new Error(updateError.message)
+
+        // 3. Get current user (session is hydrated from URL hash by Supabase JS)
+        const { data: userData, error: userError } = await supabaseClient.auth.getUser()
+        if (userError || !userData?.user) {
+          throw new Error('No se pudo obtener tu sesión. Recarga la página y vuelve a intentarlo.')
+        }
+        const user = userData.user
+
+        // 4. Lookup client_id (best-effort, NULL is acceptable)
+        const clientId = await lookupClientId(user)
+
+        // 5. INSERT 2 consents (privacy + terms)
+        try {
+          await insertConsents(user, clientId, privacyDoc, termsDoc)
+          showSuccess()
+        } catch (insertErr) {
+          // Password already saved → don't retry updateUser. Show partial-failure UI with manual retry.
+          console.error('[consents insert] failed:', insertErr)
+          showPartialFailure({ user, clientId, privacyDoc, termsDoc })
+        }
+      } catch (err) {
+        // Pre-fetch or updateUser failed → safe to retry from scratch
+        globalError.textContent = err.message || 'Ocurrió un error inesperado.'
         globalError.style.display = 'block'
         submitBtn.disabled = false
-        submitBtn.textContent = 'Guardar contraseña'
-        return
+        submitBtn.textContent = 'Activar mi cuenta'
       }
-
-      formCard.style.display = 'none'
-      successCard.style.display = 'block'
     })
   </script>
 
