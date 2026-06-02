@@ -394,16 +394,21 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Capturamos el hash ANTES de crear el cliente: supabase-js
-    // (detectSessionInUrl) procesa y limpia el hash al inicializarse, así que si
-    // no lo guardamos aquí perderíamos el error de enlace caducado/inválido.
-    const INITIAL_HASH = window.location.hash || ''
+    // Flujo token_hash + verifyOtp (NO implicit): el token viaja en el QUERY
+    // (?token_hash=…&type=…), no en el fragmento #, para sobrevivir al salto
+    // correo→Chrome iOS. Leemos los parámetros antes de crear el cliente.
+    const QUERY = new URLSearchParams(window.location.search || '')
+    const TOKEN_HASH = QUERY.get('token_hash')
+    const OTP_TYPE = QUERY.get('type') || 'invite'   // 'invite' | 'recovery'
 
     // -------- Supabase client --------
+    // detectSessionInUrl:false → verificamos a mano con verifyOtp;
+    // supabase-js ya no intenta leer (ni necesita) el fragmento #.
     const { createClient } = supabase
     const supabaseClient = createClient(
       'https://cvbdrwkwpltjdmvbeagm.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2YmRyd2t3cGx0amRtdmJlYWdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyMzA2MjcsImV4cCI6MjA4MzgwNjYyN30.KxIKiyqJDx3F6SHEt9sKd-P4CaKSiOo44PWLzY6zXzo'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2YmRyd2t3cGx0amRtdmJlYWdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyMzA2MjcsImV4cCI6MjA4MzgwNjYyN30.KxIKiyqJDx3F6SHEt9sKd-P4CaKSiOo44PWLzY6zXzo',
+      { auth: { detectSessionInUrl: false, flowType: 'implicit' } }
     )
 
     // -------- DOM refs --------
@@ -459,21 +464,40 @@
       expiredCard.style.display = 'block'
     }
 
-    // Supabase redirige los enlaces caducados/inválidos con
-    // #error=access_denied&error_code=otp_expired&error_description=... en el hash.
-    // Lo leemos de INITIAL_HASH (capturado antes de que supabase-js lo limpie).
-    function checkForLinkError () {
-      const hash = INITIAL_HASH.startsWith('#') ? INITIAL_HASH.slice(1) : INITIAL_HASH
-      if (!hash) return false
-      const params = new URLSearchParams(hash)
-      if (params.get('error') || params.get('error_code') || params.get('error_description')) {
-        showExpired()
-        return true
-      }
-      return false
+    // Con token_hash el enlace ya NO pasa por el /verify de Supabase. Un enlace
+    // caducado/inválido/usado se manifiesta de dos formas, ambas cubiertas aquí:
+    //   1) ?error=…&error_code=otp_expired en el QUERY (si algún flujo redirige)
+    //   2) verifyOtp() devuelve error
+    // En ambos casos mostramos la tarjeta "enlace caducado".
+    let sessionReady = false
+
+    function queryHasLinkError () {
+      return !!(QUERY.get('error') || QUERY.get('error_code') || QUERY.get('error_description'))
     }
 
-    checkForLinkError()
+    // Verificación del OTP al cargar: establece la sesión desde el token_hash.
+    // Sustituye a lo que antes hacía detectSessionInUrl con el fragmento #.
+    async function establishSession () {
+      if (queryHasLinkError()) { showExpired(); return }
+      if (!TOKEN_HASH) { showExpired(); return }   // enlace sin token / malformado
+      const { error } = await supabaseClient.auth.verifyOtp({
+        token_hash: TOKEN_HASH,
+        type: OTP_TYPE,
+      })
+      if (error) {
+        console.error('[verifyOtp] failed:', error)
+        showExpired()
+        return
+      }
+      // Sesión lista. Quitamos el token de la URL (que no quede en el historial).
+      try {
+        window.history.replaceState({}, document.title, window.location.pathname)
+      } catch (_) { /* no-op */ }
+      sessionReady = true
+      updateSubmitState()
+    }
+
+    establishSession()
 
     // -------- Reactive submit-button state --------
     function updateSubmitState () {
@@ -482,7 +506,9 @@
       const okLength = password.length >= 8
       const okMatch = password.length > 0 && password === confirm
       const okConsents = acceptPrivacy.checked && acceptTerms.checked
-      submitBtn.disabled = !(okLength && okMatch && okConsents)
+      // sessionReady: el enlace se ha verificado con verifyOtp. Sin sesión válida
+      // no tiene sentido permitir el submit (updateUser fallaría).
+      submitBtn.disabled = !(okLength && okMatch && okConsents && sessionReady)
     }
     ;[passwordInput, confirmInput].forEach(el => el.addEventListener('input', updateSubmitState))
     ;[acceptPrivacy, acceptTerms].forEach(el => el.addEventListener('change', updateSubmitState))
@@ -648,7 +674,7 @@
         const { error: updateError } = await supabaseClient.auth.updateUser({ password })
         if (updateError) throw new Error(updateError.message)
 
-        // 3. Get current user (session is hydrated from URL hash by Supabase JS)
+        // 3. Get current user (sesión ya establecida por verifyOtp al cargar)
         const { data: userData, error: userError } = await supabaseClient.auth.getUser()
         if (userError || !userData?.user) {
           throw new Error('No se pudo obtener tu sesión. Recarga la página y vuelve a intentarlo.')
