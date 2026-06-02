@@ -462,11 +462,13 @@
       if (profile?.client_id) {
         clientId = profile.client_id
       } else if (user.email) {
-        // 2. Fallback: clients.email (case-insensitive)
+        // 2. Fallback: clients.email con lower()+eq (no ilike). clients.email está
+        // normalizado a minúsculas en BD (trigger BEFORE INSERT/UPDATE) y así se
+        // evitan los comodines _/% de ilike. Mismo criterio que la app tras Fase 0.
         const { data: client } = await supabaseClient
           .from('clients')
           .select('id')
-          .ilike('email', user.email)
+          .eq('email', (user.email || '').trim().toLowerCase())
           .maybeSingle()
         if (client?.id) clientId = client.id
       }
