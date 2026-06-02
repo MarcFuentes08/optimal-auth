@@ -335,7 +335,7 @@
           <input type="checkbox" id="acceptPrivacy">
           <span class="checkbox-label">
             He leído y acepto la
-            <a href="https://optimal-os2.vercel.app/legal/privacidad" target="_blank" rel="noopener noreferrer">Política de Privacidad<span class="ext-icon">↗</span></a>
+            <a id="legalPrivacyLink" href="#" target="_blank" rel="noopener noreferrer">Política de Privacidad<span class="ext-icon">↗</span></a>
           </span>
         </label>
 
@@ -343,7 +343,7 @@
           <input type="checkbox" id="acceptTerms">
           <span class="checkbox-label">
             He leído y acepto los
-            <a href="https://optimal-os2.vercel.app/legal/terminos" target="_blank" rel="noopener noreferrer">Términos y Condiciones<span class="ext-icon">↗</span></a>
+            <a id="legalTermsLink" href="#" target="_blank" rel="noopener noreferrer">Términos y Condiciones<span class="ext-icon">↗</span></a>
           </span>
         </label>
       </div>
@@ -409,6 +409,11 @@
     document.querySelectorAll('.checkbox-label a').forEach(a => {
       a.addEventListener('click', e => e.stopPropagation())
     })
+
+    // -------- URLs externas centralizadas (único punto de cambio de dominio) --------
+    const LEGAL_BASE_URL = 'https://optimal-os2.vercel.app'
+    document.getElementById('legalPrivacyLink').href = LEGAL_BASE_URL + '/legal/privacidad'
+    document.getElementById('legalTermsLink').href = LEGAL_BASE_URL + '/legal/terminos'
 
     // -------- Mailto fallback for partial-failure --------
     const CONTACT_EMAIL = 'info@optimalbarbera.com'
