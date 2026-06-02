@@ -382,8 +382,23 @@
     </div>
   </div>
 
+  <!-- Expired / invalid link -->
+  <div class="card partial-failure" id="expiredCard">
+    <div class="warn-icon">⏳</div>
+    <h2>Tu enlace ha caducado</h2>
+    <p>Por seguridad, los enlaces de activación expiran tras un tiempo. Pide al centro que te envíe uno nuevo y ábrelo desde el correo en cuanto lo recibas.</p>
+    <div class="partial-actions">
+      <a href="#" class="btn-secondary" id="expiredContactLink">Contactar al centro</a>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // Capturamos el hash ANTES de crear el cliente: supabase-js
+    // (detectSessionInUrl) procesa y limpia el hash al inicializarse, así que si
+    // no lo guardamos aquí perderíamos el error de enlace caducado/inválido.
+    const INITIAL_HASH = window.location.hash || ''
+
     // -------- Supabase client --------
     const { createClient } = supabase
     const supabaseClient = createClient(
@@ -426,6 +441,39 @@
         'Email: \n' +
         '(Por favor describe brevemente cuándo intentaste activar la cuenta)'
       )
+
+    // -------- Enlace caducado / inválido --------
+    const expiredCard = document.getElementById('expiredCard')
+    const expiredContactLink = document.getElementById('expiredContactLink')
+    expiredContactLink.href = 'mailto:' + CONTACT_EMAIL +
+      '?subject=' + encodeURIComponent('Enlace de activación caducado') +
+      '&body=' + encodeURIComponent(
+        'Hola, mi enlace para activar la cuenta de la app ha caducado. ¿Podéis enviarme uno nuevo?\n\n' +
+        'Email: '
+      )
+
+    function showExpired () {
+      formCard.style.display = 'none'
+      successCard.style.display = 'none'
+      partialFailureCard.style.display = 'none'
+      expiredCard.style.display = 'block'
+    }
+
+    // Supabase redirige los enlaces caducados/inválidos con
+    // #error=access_denied&error_code=otp_expired&error_description=... en el hash.
+    // Lo leemos de INITIAL_HASH (capturado antes de que supabase-js lo limpie).
+    function checkForLinkError () {
+      const hash = INITIAL_HASH.startsWith('#') ? INITIAL_HASH.slice(1) : INITIAL_HASH
+      if (!hash) return false
+      const params = new URLSearchParams(hash)
+      if (params.get('error') || params.get('error_code') || params.get('error_description')) {
+        showExpired()
+        return true
+      }
+      return false
+    }
+
+    checkForLinkError()
 
     // -------- Reactive submit-button state --------
     function updateSubmitState () {
