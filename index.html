@@ -512,6 +512,39 @@
     const TOKEN_HASH = QUERY.get('token_hash')
     const OTP_TYPE = QUERY.get('type') || 'invite'   // 'invite' | 'recovery'
 
+    // -------- Textos según el tipo de enlace --------
+    // Esta misma página atiende DOS flujos: el alta que manda el centro
+    // ('invite') y el «¿Olvidaste tu contraseña?» de la app ('recovery'). Con un
+    // solo juego de textos, quien venía a recuperar leía «Activa tu cuenta».
+    // Los checks legales se piden en ambos: quitarlos en recovery exige saber
+    // antes quién tiene ya el consentimiento registrado en `consents`.
+    const IS_RECOVERY = OTP_TYPE === 'recovery'
+    const COPY = IS_RECOVERY
+      ? {
+          title: 'OPTIMAL — Nueva contraseña',
+          h1: 'Crea tu nueva contraseña',
+          intro: 'Elige una contraseña nueva y confirma los documentos legales para volver a entrar en la app.',
+          submit: 'Guardar contraseña',
+          submitBusy: 'Guardando...',
+          successTitle: '¡Contraseña actualizada!',
+          consentError: 'Debes aceptar ambos documentos legales para continuar.',
+          expiredIntro: 'Por seguridad, los enlaces de recuperación expiran tras un tiempo. Pide otro desde «¿Olvidaste tu contraseña?» en la app y ábrelo desde el correo en cuanto lo recibas.',
+          expiredSubject: 'Enlace de recuperación caducado',
+          expiredBody: 'Hola, mi enlace para cambiar la contraseña de la app ha caducado. ¿Podéis ayudarme?\n\nEmail: ',
+        }
+      : {
+          title: 'OPTIMAL — Activa tu cuenta',
+          h1: 'Activa tu cuenta',
+          intro: 'Crea una contraseña segura y acepta los documentos legales para acceder a la app.',
+          submit: 'Activar mi cuenta',
+          submitBusy: 'Activando...',
+          successTitle: '¡Ya tienes acceso a OPTIMAL!',
+          consentError: 'Debes aceptar ambos documentos legales para activar tu cuenta.',
+          expiredIntro: 'Por seguridad, los enlaces de activación expiran tras un tiempo. Pide al centro que te envíe uno nuevo y ábrelo desde el correo en cuanto lo recibas.',
+          expiredSubject: 'Enlace de activación caducado',
+          expiredBody: 'Hola, mi enlace para activar la cuenta de la app ha caducado. ¿Podéis enviarme uno nuevo?\n\nEmail: ',
+        }
+
     // -------- Supabase client --------
     // detectSessionInUrl:false → verificamos a mano con verifyOtp;
     // supabase-js ya no intenta leer (ni necesita) el fragmento #.
@@ -562,11 +595,17 @@
     const expiredCard = document.getElementById('expiredCard')
     const expiredContactLink = document.getElementById('expiredContactLink')
     expiredContactLink.href = 'mailto:' + CONTACT_EMAIL +
-      '?subject=' + encodeURIComponent('Enlace de activación caducado') +
-      '&body=' + encodeURIComponent(
-        'Hola, mi enlace para activar la cuenta de la app ha caducado. ¿Podéis enviarme uno nuevo?\n\n' +
-        'Email: '
-      )
+      '?subject=' + encodeURIComponent(COPY.expiredSubject) +
+      '&body=' + encodeURIComponent(COPY.expiredBody)
+
+    // Los textos se aplican al cargar, con el formulario aún oculto tras el
+    // verifyOtp: el cliente nunca llega a ver el copy del otro flujo.
+    document.title = COPY.title
+    formCard.querySelector('h1').textContent = COPY.h1
+    formCard.querySelector('p').textContent = COPY.intro
+    submitBtn.textContent = COPY.submit
+    successCard.querySelector('h2').textContent = COPY.successTitle
+    expiredCard.querySelector('p').textContent = COPY.expiredIntro
 
     function showExpired () {
       formCard.style.display = 'none'
@@ -767,7 +806,7 @@
       }
 
       if (!acceptPrivacy.checked || !acceptTerms.checked) {
-        globalError.textContent = 'Debes aceptar ambos documentos legales para activar tu cuenta.'
+        globalError.textContent = COPY.consentError
         globalError.style.display = 'block'
         valid = false
       }
@@ -775,7 +814,7 @@
       if (!valid) return
 
       submitBtn.disabled = true
-      submitBtn.textContent = 'Activando...'
+      submitBtn.textContent = COPY.submitBusy
 
       try {
         // 1. Pre-fetch legal docs (fail fast if BD KO)
@@ -809,7 +848,7 @@
         globalError.textContent = err.message || 'Ocurrió un error inesperado.'
         globalError.style.display = 'block'
         submitBtn.disabled = false
-        submitBtn.textContent = 'Activar mi cuenta'
+        submitBtn.textContent = COPY.submit
       }
     })
   </script>
